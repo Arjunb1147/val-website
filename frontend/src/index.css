@@ -1,0 +1,180 @@
+/* ============================================================
+   INDEX.CSS — Global styles for the entire VAL website.
+
+   This file sets up:
+   1. A CSS "reset" (removes default browser styling for consistency)
+   2. Color variables (so we can change the brand colors in ONE place)
+   3. Typography (fonts for headings and body text)
+   4. Reusable classes (.container, .section, .btn) used across all components
+   5. Mobile responsiveness (adjustments for smaller screens)
+   ============================================================ */
+
+/* --- CSS RESET ---
+   Browsers add their own default margins, padding, and sizing.
+   This removes all of that so our design looks the same everywhere. */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* --- BRAND COLOR VARIABLES ---
+   Defined here once, used everywhere via var(--name).
+   To change the brand color of the entire site, just edit these values. */
+:root {
+  --primary: #1a3c6e;           /* Dark blue — main brand color (headings, navbar) */
+  --primary-light: #2a5ca8;     /* Lighter blue — for hover effects */
+  --secondary: #e8a838;         /* Gold/amber — accent color (buttons, highlights) */
+  --secondary-light: #f0c060;   /* Lighter gold — for button hover */
+  --accent: #2ecc71;            /* Green — for checkmarks and success indicators */
+  --dark: #1a1a2e;              /* Very dark blue — footer background */
+  --dark-light: #16213e;        /* Slightly lighter dark — for subtle contrasts */
+  --text: #333;                 /* Dark gray — main body text color */
+  --text-light: #666;           /* Medium gray — secondary/descriptive text */
+  --bg: #ffffff;                /* White — main page background */
+  --bg-light: #f8f9fa;          /* Off-white — alternating section backgrounds */
+  --bg-alt: #f0f4f8;            /* Light blue-gray — another alternating background */
+  --border: #e0e6ed;            /* Light gray — for input borders and dividers */
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);    /* Subtle shadow for cards */
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12); /* Stronger shadow for hover effects */
+  --radius: 12px;               /* Rounded corners for cards */
+  --radius-sm: 8px;             /* Smaller rounded corners for inputs */
+}
+
+/* --- SMOOTH SCROLLING ---
+   When clicking nav links like "About" or "Contact", the page
+   scrolls smoothly instead of jumping instantly. */
+html {
+  scroll-behavior: smooth;
+}
+
+/* --- BASE BODY STYLES ---
+   Sets the default font, text color, and background for the whole page. */
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased; /* Makes text look crisper on Mac */
+}
+
+/* --- HEADING FONTS ---
+   All headings use "Playfair Display" (an elegant serif font)
+   to give the site a premium, educational feel. */
+h1, h2, h3, h4 {
+  font-family: "Playfair Display", serif;
+  line-height: 1.2;
+}
+
+/* --- LINK STYLES ---
+   Remove the default blue underline from all links.
+   Individual components add their own link styles as needed. */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* --- IMAGE DEFAULTS ---
+   Prevent images from overflowing their containers. */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* --- CONTAINER ---
+   A centered wrapper that keeps content from stretching edge-to-edge
+   on wide screens. Max width is 1200px with some padding on the sides. */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* --- SECTION SPACING ---
+   Each major section (About, Pillars, Team, etc.) gets consistent
+   vertical padding to create breathing room between sections. */
+.section {
+  padding: 80px 0;
+}
+
+/* --- SECTION TITLES ---
+   The big centered headings like "About VAL", "Our Learning Pillars", etc. */
+.section-title {
+  font-size: 2.5rem;
+  color: var(--primary);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* --- SECTION SUBTITLES ---
+   The descriptive text that appears below each section title. */
+.section-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 48px;
+}
+
+/* --- BUTTON BASE STYLES ---
+   Shared styles for all buttons (rounded pill shape, smooth hover transition). */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border-radius: 50px;     /* Fully rounded "pill" shape */
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease; /* Smooth animation on hover */
+}
+
+/* --- PRIMARY BUTTON (Gold) ---
+   The main call-to-action button (e.g., "Explore Programs"). */
+.btn-primary {
+  background: var(--secondary);
+  color: var(--dark);
+}
+
+/* On hover: slightly lighter, lifts up, and gets a glowing shadow */
+.btn-primary:hover {
+  background: var(--secondary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(232, 168, 56, 0.4);
+}
+
+/* --- OUTLINE BUTTON (White border) ---
+   The secondary button style (e.g., "Get in Touch" on the hero). */
+.btn-outline {
+  background: transparent;
+  color: #fff;
+  border: 2px solid #fff;
+}
+
+/* On hover: fills with white and text turns blue */
+.btn-outline:hover {
+  background: #fff;
+  color: var(--primary);
+}
+
+/* --- MOBILE RESPONSIVENESS ---
+   On screens smaller than 768px (tablets and phones),
+   reduce spacing and font sizes so content fits better. */
+@media (max-width: 768px) {
+  .section {
+    padding: 60px 0;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+}
