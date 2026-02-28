@@ -100,7 +100,7 @@ export default function Navbar() {
         .navbar__inner {
           display: flex;
           align-items: center;
-          justify-content: center;
+          justify-content: flex-end;
           max-width: 100%;
           padding: 0 48px;
         }
