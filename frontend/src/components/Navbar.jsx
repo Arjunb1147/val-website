@@ -48,7 +48,7 @@ export default function Navbar() {
 
         {/* ---- LOGO (left side) ---- */}
         <a href="#" className="navbar__logo">
-          <img src="/images/Valve_logo.jpeg" alt="VAL" className="navbar__logo-img" />
+          <img src="/images/ValvesLogo2.jpeg" alt="VAL" className="navbar__logo-img" />
           <span className="navbar__brand">VAL</span>
         </a>
 
