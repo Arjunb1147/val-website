@@ -49,7 +49,6 @@ export default function Navbar() {
         {/* ---- LOGO (left side) ---- */}
         <a href="#" className="navbar__logo">
           <img src="/images/ValvesLogo2.jpeg" alt="VAL" className="navbar__logo-img" />
-          <span className="navbar__brand">VAL</span>
         </a>
 
         {/* ---- NAVIGATION LINKS (right side on desktop, side panel on mobile) ---- */}
@@ -118,8 +117,8 @@ export default function Navbar() {
           gap: 10px;
         }
         .navbar__logo-img {
-          height: 80px;
-          width: 80px;
+          height: 200px;
+          width: 200px;
           border-radius: 8px;
           object-fit: cover;
         }
