@@ -118,8 +118,8 @@ export default function Navbar() {
           gap: 10px;
         }
         .navbar__logo-img {
-          height: 40px;
-          width: 40px;
+          height: 80px;
+          width: 80px;
           border-radius: 8px;
           object-fit: cover;
         }
