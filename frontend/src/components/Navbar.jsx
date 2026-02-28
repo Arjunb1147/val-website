@@ -46,12 +46,7 @@ export default function Navbar() {
     <nav className={`navbar ${scrolled ? "navbar--scrolled" : ""}`}>
       <div className="container navbar__inner">
 
-        {/* ---- LOGO (left side) ---- */}
-        <a href="#" className="navbar__logo">
-          <img src="/images/ValvesLogo2.jpeg" alt="VAL" className="navbar__logo-img" />
-        </a>
-
-        {/* ---- NAVIGATION LINKS (right side on desktop, side panel on mobile) ---- */}
+        {/* ---- NAVIGATION LINKS ---- */}
         {/* On mobile: when menuOpen is true, the "navbar__links--open" class slides the menu in */}
         <ul className={`navbar__links ${menuOpen ? "navbar__links--open" : ""}`}>
           {navLinks.map((link) => (
@@ -105,28 +100,9 @@ export default function Navbar() {
         .navbar__inner {
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          justify-content: center;
           max-width: 100%;
           padding: 0 48px;
-        }
-
-        /* Logo: image + text side by side */
-        .navbar__logo {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-        .navbar__logo-img {
-          height: 200px;
-          width: 200px;
-          border-radius: 8px;
-          object-fit: cover;
-        }
-        .navbar__brand {
-          font-family: "Playfair Display", serif;
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: #fff;
         }
 
         /* Navigation links: horizontal row with spacing */

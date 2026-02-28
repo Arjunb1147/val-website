@@ -20,6 +20,9 @@ export default function Hero() {
       <div className="hero__overlay" />
 
       <div className="container hero__content">
+        {/* Company logo — sits above the hero text and scrolls with the page */}
+        <img src="/images/ValvesLogo2.jpeg" alt="VAL" className="hero__logo" />
+
         {/* Small badge showing the launch date */}
         <p className="hero__badge">Launched 18 January 2026</p>
 
@@ -97,6 +100,15 @@ export default function Hero() {
           z-index: 1;
           padding: 120px 0 80px;  /* Extra top padding so content doesn't hide behind navbar */
           max-width: 800px;
+        }
+
+        /* Company logo displayed at the top of the hero section */
+        .hero__logo {
+          height: 200px;
+          width: 200px;
+          border-radius: 12px;
+          object-fit: cover;
+          margin-bottom: 24px;
         }
 
         /* The "Launched 18 January 2026" badge — pill-shaped with gold border */
