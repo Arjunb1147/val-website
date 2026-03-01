@@ -14,10 +14,6 @@
 
 const express = require("express");
 
-// Import the database connection pool (from db.js) so we can
-// save and retrieve leads from our PostgreSQL database.
-// This is used by the POST /api/leads and GET /api/leads endpoints below.
-const pool = require("../db");
 
 // A "router" is like a mini-app that handles a group of related routes.
 // We define all our routes here, then plug this router into the main server.
@@ -294,111 +290,6 @@ router.get("/about", (req, res) => {
   });
 });
 
-// ============================================================
-// LEAD CAPTURE ENDPOINTS (NEW — PostgreSQL-backed)
-//
-// These two endpoints handle the "Get in Touch" form submissions.
-// Unlike the endpoints above (which return hardcoded data),
-// these actually read from and write to our PostgreSQL database.
-//
-// THE BUSINESS FLOW:
-// 1. Visitor fills out the contact form on the website
-// 2. Frontend sends the form data to POST /api/leads
-// 3. Backend validates the data and saves it to the "leads" table
-// 4. Lead is now permanently stored — even if the server restarts
-// 5. You can view all leads via GET /api/leads (or directly in the database)
-// ============================================================
-
-// ---- POST /api/leads ----
-// PURPOSE: Save a new lead (form submission) into the database.
-//
-// WHEN IS THIS CALLED?
-// Every time a visitor fills out the "Get in Touch" form and clicks
-// "Send Message", the frontend sends the form data here.
-//
-// WHAT DOES IT EXPECT?
-// A JSON body with: { name, email, interestArea, message }
-// - name and email are REQUIRED (returns error 400 if missing)
-// - interestArea and message are OPTIONAL
-//
-// WHAT DOES IT RETURN?
-// Success: { success: true, lead: { id: 1, name: "...", email: "...", ... } }
-// Failure: { error: "Name and email are required." } (status 400)
-//          { error: "Failed to save your inquiry..." } (status 500)
-//
-// "async" means this function waits for the database operation to finish
-// before sending a response back to the user.
-router.post("/leads", async (req, res) => {
-  try {
-    // Extract the 4 form fields from the incoming request body.
-    // This is called "destructuring" — it pulls out specific keys from an object.
-    const { name, email, interestArea, message } = req.body;
-
-    // VALIDATION: Make sure the visitor provided at least their name and email.
-    // Without these, the lead isn't useful for follow-up.
-    // "400" is the HTTP status code for "Bad Request" — meaning the client
-    // sent incomplete data.
-    if (!name || !email) {
-      return res.status(400).json({ error: "Name and email are required." });
-    }
-
-    // INSERT the lead into our PostgreSQL "leads" table.
-    //
-    // SECURITY NOTE: We use $1, $2, $3, $4 placeholders instead of directly
-    // putting user input into the SQL string. This is called a "parameterized query"
-    // and it prevents "SQL injection" attacks — where a malicious user could
-    // type SQL commands into the form fields to hack the database.
-    //
-    // "RETURNING *" tells PostgreSQL to send back the newly created row
-    // (including the auto-generated id and created_at timestamp).
-    const result = await pool.query(
-      `INSERT INTO leads (name, email, interest_area, message)
-       VALUES ($1, $2, $3, $4)
-       RETURNING *`,
-      [name, email, interestArea || null, message || null]
-    );
-
-    // Send a success response back to the frontend.
-    // "201" is the HTTP status code for "Created" — meaning a new resource
-    // was successfully created in the database.
-    // The frontend uses this to show the green "Thank you!" message.
-    res.status(201).json({ success: true, lead: result.rows[0] });
-  } catch (err) {
-    // If anything goes wrong (database down, network issue, etc.),
-    // log the error for developers and send a friendly message to the user.
-    // "500" = "Internal Server Error" — something broke on our end, not the user's fault.
-    console.error("Error saving lead:", err.message);
-    res.status(500).json({ error: "Failed to save your inquiry. Please try again." });
-  }
-});
-
-// ---- GET /api/leads ----
-// PURPOSE: Retrieve all leads that have been submitted.
-//
-// WHEN IS THIS USEFUL?
-// When you (as a PM/admin) want to see all inquiries that came through
-// the contact form. You can hit this in a browser:
-//   http://localhost:5001/api/leads
-// or use the terminal:
-//   curl http://localhost:5001/api/leads
-//
-// WHAT DOES IT RETURN?
-// An array of all leads, sorted by newest first. For example:
-// [
-//   { id: 3, name: "Alice", email: "alice@...", interest_area: "AI, ML...", created_at: "..." },
-//   { id: 2, name: "Bob",   email: "bob@...",   interest_area: "Cyber...",  created_at: "..." },
-//   { id: 1, name: "Carol", email: "carol@...", interest_area: null,        created_at: "..." }
-// ]
-router.get("/leads", async (req, res) => {
-  try {
-    // "ORDER BY created_at DESC" = newest leads first (most recent at the top)
-    const result = await pool.query("SELECT * FROM leads ORDER BY created_at DESC");
-    res.json(result.rows);
-  } catch (err) {
-    console.error("Error fetching leads:", err.message);
-    res.status(500).json({ error: "Failed to fetch leads." });
-  }
-});
 
 // Export this router so it can be used in server.js
 // (This is how server.js connects to all these routes via "app.use('/api', apiRoutes)")

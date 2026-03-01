@@ -11,14 +11,17 @@
 //   An inquiry form where visitors can submit their name, email,
 //   interest area (dropdown), and a message.
 //
-// FORM SUBMISSION FLOW:
+// FORM SUBMISSION FLOW (Serverless — Google Sheets):
 // 1. Visitor types their name, email, selects an interest area, writes a message
 // 2. React "watches" every keystroke and stores the current value in state
 // 3. When they click "Send Message", we package the data as JSON
-// 4. We send it to the backend via POST /api/leads
-// 5. The backend validates it and saves it to our PostgreSQL database
+// 4. We send it directly to a Google Apps Script Web App URL
+// 5. The Apps Script appends a new row to a Google Sheet
 // 6. On success: form clears and shows a green "Thank you!" banner
 //    On failure: shows a red "Something went wrong" banner
+//
+// No backend or database needed — leads go straight into a Google Sheet
+// that the admin can view, filter, and manage from any device.
 //
 // DATA SOURCE: Receives "about" prop from App.jsx.
 // Extracts "about.contact" which has: company, address, phone, email, gstin.
@@ -30,6 +33,13 @@
 //   - What the user has typed in each form field (name, email, etc.)
 //   - Whether the form is currently sending, sent successfully, or errored
 import { useState } from "react";
+
+// ============================================================
+// GOOGLE SHEETS SETUP:
+// Replace the URL below with your deployed Google Apps Script Web App URL.
+// See the setup instructions provided separately for how to create this.
+// ============================================================
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec";
 
 export default function Contact({ about }) {
   // Safely extract contact info. The "?." is "optional chaining" —
@@ -60,47 +70,33 @@ export default function Contact({ about }) {
 
   // ---- FORM SUBMISSION HANDLER ----
   // This function runs when the visitor clicks "Send Message".
-  // It collects all the form data and sends it to our backend API,
-  // which then saves it into our PostgreSQL database as a new lead.
+  // It collects all the form data and sends it to a Google Apps Script,
+  // which appends it as a new row in a Google Sheet.
   //
-  // "async" means this function involves waiting — we send data to
-  // the server and wait for it to confirm the save before continuing.
+  // We use "mode: no-cors" because Google Apps Script redirects the response,
+  // which means we can't read the response status. Instead, if the fetch
+  // completes without a network error, we assume the data was saved successfully.
+  // The admin can verify by checking the Google Sheet directly.
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent the browser's default behavior of refreshing the page
-
-    setStatus("sending"); // Change button text to "Sending..." and disable it
+    e.preventDefault();
+    setStatus("sending");
 
     try {
-      // Send a POST request to our backend's /api/leads endpoint.
-      // "fetch" is the browser's built-in way to make HTTP requests.
-      //
-      // What we're sending:
-      //   - method: "POST" = we're sending data TO the server (not asking for data)
-      //   - headers: tells the server "this data is in JSON format"
-      //   - body: the actual form data, converted from JavaScript object to JSON string
-      //
-      // The Vite proxy (configured in vite.config.js) automatically forwards
-      // "/api/leads" to "http://localhost:5001/api/leads" (our backend).
-      const res = await fetch("/api/leads", {
+      await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        mode: "no-cors",
         body: JSON.stringify({ name, email, interestArea, message }),
       });
 
-      // If the server returned an error (e.g., 400 or 500), throw an error
-      // so we jump to the "catch" block below and show the error message.
-      if (!res.ok) throw new Error("Failed to send");
-
-      // SUCCESS! The lead was saved to the database.
+      // If we get here without an error, the data was sent to Google Sheets.
       // Clear all form fields so the visitor can submit another inquiry if needed.
       setName("");
       setEmail("");
       setInterestArea("");
       setMessage("");
-      setStatus("sent"); // This triggers the green "Thank you!" banner to appear
+      setStatus("sent");
     } catch {
-      // FAILURE — something went wrong (server down, network issue, validation error).
-      // Show the red error banner so the visitor knows to try again.
+      // A network error occurred (e.g., user is offline, script URL is wrong).
       setStatus("error");
     }
   };
@@ -164,8 +160,8 @@ export default function Contact({ about }) {
 
           {/* ---- RIGHT COLUMN: Inquiry Form ---- */}
           <div className="contact-form__wrapper">
-            {/* The form now sends data to the backend (POST /api/leads)
-                which saves it into our PostgreSQL database. */}
+            {/* The form sends data directly to a Google Sheet via Apps Script.
+                No backend or database needed — fully serverless. */}
             <form className="contact-form" onSubmit={handleSubmit}>
               <h3>Send us a Message</h3>
 
