@@ -39,7 +39,8 @@ import { useState } from "react";
 // Replace the URL below with your deployed Google Apps Script Web App URL.
 // See the setup instructions provided separately for how to create this.
 // ============================================================
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSKFNMdqPoMXB2h4YuWSLMM-xFaaFuhrFUnnJx1Wf5ME-Od5O_NWFBjKv4QHi_XunIhA/exec"
+
 
 export default function Contact({ about }) {
   // Safely extract contact info. The "?." is "optional chaining" —
